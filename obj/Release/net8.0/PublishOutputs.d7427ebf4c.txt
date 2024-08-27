@@ -1,0 +1,12 @@
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/BouillonChanvre
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/appsettings.Development.json
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/appsettings.json
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/BouillonChanvre.dll
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/BouillonChanvre.runtimeconfig.json
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/BouillonChanvre.pdb
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/Microsoft.EntityFrameworkCore.dll
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/Microsoft.EntityFrameworkCore.Abstractions.dll
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/Microsoft.EntityFrameworkCore.Relational.dll
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/Npgsql.dll
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/Npgsql.EntityFrameworkCore.PostgreSQL.dll
+/Users/pierre/BouillonChanvre/BouillonChanvre/bin/Release/net8.0/publish/BouillonChanvre.deps.json

@@ -1,0 +1,47 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = BouillonChanvre
+build_property.RootNamespace = BouillonChanvre
+build_property.ProjectDir = /Users/pierre/BouillonChanvre/BouillonChanvre/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/pierre/BouillonChanvre/BouillonChanvre
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/Pages/Admin/RecipeEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWRtaW4vUmVjaXBlRWRpdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/Pages/Admin/RecipeList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWRtaW4vUmVjaXBlTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-x2v47gc2mj
+
+[/Users/pierre/BouillonChanvre/BouillonChanvre/Pages/_host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX2hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 

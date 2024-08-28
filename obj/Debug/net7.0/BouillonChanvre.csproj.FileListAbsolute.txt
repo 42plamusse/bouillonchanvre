@@ -1,7 +1,0 @@
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.GeneratedMSBuildEditorConfig.editorconfig
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.AssemblyInfoInputs.cache
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.AssemblyInfo.cs
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.csproj.CoreCompileInputs.cache
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.MvcApplicationPartsAssemblyInfo.cache
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.RazorAssemblyInfo.cache
-/Users/pierre/BouillonChanvre/BouillonChanvre/obj/Debug/net7.0/BouillonChanvre.RazorAssemblyInfo.cs

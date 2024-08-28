@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BouillonChanvre")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e557c14a58d3888f1b1a5fbdb75d524c7457fa6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("BouillonChanvre")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BouillonChanvre")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

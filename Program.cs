@@ -10,11 +10,23 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register HttpClient with a BaseAddress
-builder.Services.AddHttpClient("LocalAPI", client =>
+// Conditional configuration for HttpClient based on environment
+if (builder.Environment.IsDevelopment())
 {
-    client.BaseAddress = new Uri("http://localhost:5094/");
-});
+    // Local development API base address
+    builder.Services.AddHttpClient("LocalAPI", client =>
+    {
+        client.BaseAddress = new Uri("http://localhost:5094/");
+    });
+}
+else
+{
+    // Production API base address
+    builder.Services.AddHttpClient("LocalAPI", client =>
+    {
+        client.BaseAddress = new Uri("https://bouillonchanvre-emeud7bsbedsc2f8.westeurope-01.azurewebsites.net/");
+    });
+}
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("LocalAPI"));
 
@@ -39,4 +51,5 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
 

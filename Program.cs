@@ -13,6 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Conditional configuration for HttpClient based on environment
 if (builder.Environment.IsDevelopment())
 {
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
     // Local development API base address
     builder.Services.AddHttpClient("LocalAPI", client =>
     {
@@ -21,6 +23,14 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
+    // Retrieve the password from the environment variable
+    var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+    // Replace the placeholder in the connection string with the actual password
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection").Replace("{Password}", password);
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
     // Production API base address
     builder.Services.AddHttpClient("LocalAPI", client =>
     {

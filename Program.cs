@@ -25,13 +25,22 @@ else
 {
     // Retrieve the password from the environment variable
     var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-    
+
     if (string.IsNullOrEmpty(password))
     {
-        throw new Exception("DB_PASSWORD environment variable is not set.");
+        throw new Exception("DB_PASSWORD environment variable is not set or is empty.");
     }
-    // Replace the placeholder in the connection string with the actual password
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection").Replace("{Password}", password);
+
+    // Log the length of the password to ensure it's retrieved
+    Console.WriteLine("DB_PASSWORD length: " + password.Length);
+
+    // Replace the password placeholder in the connection string
+    var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = rawConnectionString.Replace("{Password}", password);
+
+    // Log sanitized connection string (without revealing the password)
+    Console.WriteLine("Raw Connection String: " + rawConnectionString);
+    Console.WriteLine("Final Connection String (sanitized): " + connectionString.Replace(password, "******"));
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(connectionString));

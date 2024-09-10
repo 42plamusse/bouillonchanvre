@@ -23,13 +23,16 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    // Retrieve the password from the environment variable
     var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
     if (string.IsNullOrEmpty(password))
     {
         throw new Exception("DB_PASSWORD environment variable is not set or is empty.");
     }
+    else
+    {
+        Console.WriteLine($"DB_PASSWORD length: {password.Length}");
+    }
+
 
     // Log the length of the password to ensure it's retrieved
     Console.WriteLine("DB_PASSWORD length: " + password.Length);

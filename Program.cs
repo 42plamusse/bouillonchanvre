@@ -25,7 +25,11 @@ else
 {
     // Retrieve the password from the environment variable
     var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
+    
+    if (string.IsNullOrEmpty(password))
+    {
+        throw new Exception("DB_PASSWORD environment variable is not set.");
+    }
     // Replace the placeholder in the connection string with the actual password
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection").Replace("{Password}", password);
 

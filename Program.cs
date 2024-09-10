@@ -6,10 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers(); 
 
-// Use SQL Server instead of PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 // Conditional configuration for HttpClient based on environment
 if (builder.Environment.IsDevelopment())
 {

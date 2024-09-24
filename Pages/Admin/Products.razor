@@ -1,0 +1,126 @@
+@page "/admin/products"
+@using BouillonChanvre.Models
+@using BouillonChanvre.Services
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+
+<h3>Products</h3>
+
+<button @onclick="CreateNewProduct">Create New Product</button>
+
+@if (products == null)
+{
+    <p>Loading products...</p>
+}
+else if (products.Count == 0)
+{
+    <p>No products available.</p>
+}
+else
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>SubCategory</th>
+            <th>Product Name</th>
+            <th>Variant</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in products)
+            {
+                if (product.Variants != null && product.Variants.Count > 0)
+                {
+                    foreach (var variant in product.Variants)
+                    {
+                        if (variant.Sizes != null && variant.Sizes.Count > 0)
+                        {
+                            foreach (var size in variant.Sizes)
+                            {
+                                <tr>
+                                    <td>@(product.Category?.Name ?? "No Category")</td>
+                                    <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
+                                    <td>@product.ProductName</td>
+                                    <td>@variant.VariantName</td>
+                                    <td>@size.Size @size.SizeUnit</td>
+                                    <td>@size.Price</td>
+                                    <td>
+                                        <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
+                                        <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>@(product.Category?.Name ?? "No Category")</td>
+                                <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
+                                <td>@product.ProductName</td>
+                                <td>@variant.VariantName</td>
+                                <td>No Size Available</td>
+                                <td>-</td>
+                                <td>
+                                    <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
+                                    <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>@(product.Category?.Name ?? "No Category")</td>
+                        <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
+                        <td>@product.ProductName</td>
+                        <td>No Variant Available</td>
+                        <td>No Size Available</td>
+                        <td>No Price Available</td>
+                        <td>
+                            <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
+                            <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Product> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            products = await ProductService.GetAllProducts();
+            products.ForEach(p => Console.WriteLine(p.ProductName));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching products: {ex.Message}");
+        }
+    }
+
+    private void CreateNewProduct()
+    {
+        NavigationManager.NavigateTo("/admin/products/create");
+    }
+
+    private void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/admin/products/edit/{productId}");
+    }
+
+    private async Task DeleteProduct(int productId)
+    {
+        await ProductService.DeleteProduct(productId);
+        products = await ProductService.GetAllProducts();
+    }
+}

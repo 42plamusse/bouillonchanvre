@@ -1,0 +1,107 @@
+@using BouillonChanvre.Models
+@using BouillonChanvre.Services
+@inject ISubCategoryService SubCategoryService
+
+@code {
+    [Parameter] public EventCallback<int?> OnSelectedIdChanged { get; set; }
+    [Parameter]
+    public int CategoryId { get; set; }
+    [Parameter]
+    public int? SelectedId
+    {
+        get => selectedId;
+        set
+        {
+            if (selectedId != value)
+            {
+                selectedId = value;
+                OnSelectedIdChanged.InvokeAsync(selectedId);
+            }
+        }
+    }
+
+
+    private List<SubCategory> subCategories = new List<SubCategory>();
+    private bool showNewItemModal = false;
+    private string newItemName = "";
+    private int? selectedId;
+    private int? categoryId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (categoryId != CategoryId)
+        {
+            categoryId = CategoryId;
+            await FetchSubCategories();
+        }
+
+    }
+    private async Task FetchSubCategories()
+    {
+        if (CategoryId == 0)
+            return;
+
+        subCategories = await SubCategoryService.GetSubCategoriesByCategoryId(CategoryId);
+
+    }
+
+    private async Task AddNewItem()
+    {
+        if (!string.IsNullOrWhiteSpace(newItemName))
+        {
+            await SubCategoryService.CreateSubCategory(newItemName, CategoryId);
+            await FetchSubCategories();
+            newItemName = string.Empty;
+            showNewItemModal = false;
+        }
+    }
+
+    private void OpenNewItemModal()
+    {
+        showNewItemModal = true;
+    }
+
+    private void CloseNewItemModal()
+    {
+        showNewItemModal = false;
+        newItemName = string.Empty;
+    }
+}
+
+<div class="form-group">
+    <label>Sous-catégorie</label>
+    <InputSelect @bind-Value="SelectedId" class="form-control">
+        <option value="">Sélectionnez une sous-catégorie</option>
+        @foreach (var subCategory in subCategories)
+        {
+            <option value="@subCategory.SubCategoryID">@subCategory.Name</option>
+        }
+    </InputSelect>
+    <button type="button" class="btn btn-secondary" @onclick="OpenNewItemModal">Ajouter une nouvelle
+        sous-catégorie</button>
+</div>
+
+@if (showNewItemModal)
+{
+    <div class="modal show d-block" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Créer une nouvelle sous-catégorie</h5>
+                <button type="button" class="btn-close" @onclick="CloseNewItemModal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newItem">Nom de la sous-catégorie</label>
+                    <InputText id="newItem" @bind-Value="newItemName" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseNewItemModal">Fermer</button>
+                <button type="button" class="btn btn-primary" @onclick="AddNewItem">Enregistrer la
+                    sous-catégorie</button>
+            </div>
+        </div>
+    </div>
+</div>
+}

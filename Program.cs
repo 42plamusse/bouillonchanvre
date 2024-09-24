@@ -1,42 +1,32 @@
 using BouillonChanvre.Data;
+using BouillonChanvre.Services; // For ProductService
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(); 
 
-// Conditional configuration for HttpClient based on environment
+// Conditional configuration for database based on environment
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-    // Local development API base address
-    builder.Services.AddHttpClient("LocalAPI", client =>
-    {
-        client.BaseAddress = new Uri("http://localhost:5094/");
-    });
 }
 else
 {
     var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-    // Replace the password placeholder in the connection string
     var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     var connectionString = rawConnectionString.Replace("{Password}", password);
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(connectionString));
-        
-    // Production API base address
-    builder.Services.AddHttpClient("LocalAPI", client =>
-    {
-        client.BaseAddress = new Uri("https://bouillonchanvre-emeud7bsbedsc2f8.westeurope-01.azurewebsites.net/");
-    });
 }
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("LocalAPI"));
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
+// Add Razor Pages and Blazor Server support
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
@@ -53,7 +43,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

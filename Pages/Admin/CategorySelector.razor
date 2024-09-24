@@ -1,0 +1,96 @@
+@using BouillonChanvre.Models
+@using BouillonChanvre.Services
+@inject ICategoryService CategoryService
+
+@code {
+    private int? _selectedId;
+    private List<Category> categories = new List<Category>();
+    private bool showNewItemModal = false;
+    private string newItemName = "";
+
+    [Parameter]
+    public int? SelectedId
+    {
+        get => _selectedId;
+        set
+        {
+            if (_selectedId != value)
+            {
+                _selectedId = value;
+                OnSelectedIdChanged.InvokeAsync(_selectedId);
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<int?> OnSelectedIdChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchCategories();
+    }
+
+    private async Task FetchCategories()
+    {
+        categories = await CategoryService.GetAllCategories();
+        categories.ForEach(c => Console.WriteLine($"CategoryID: {c.CategoryID}, Name: {c.Name}"));
+    }
+
+    private async Task AddNewItem()
+    {
+        if (!string.IsNullOrWhiteSpace(newItemName))
+        {
+            await CategoryService.CreateCategory(newItemName);
+            await FetchCategories();
+            newItemName = string.Empty;
+            showNewItemModal = false;
+        }
+    }
+
+    private void OpenNewItemModal()
+    {
+        showNewItemModal = true;
+    }
+
+    private void CloseNewItemModal()
+    {
+        showNewItemModal = false;
+        newItemName = string.Empty;
+    }
+}
+
+<div class="form-group">
+    <label>Catégorie</label>
+    <InputSelect class="form-control" @bind-Value="SelectedId" TValue="int?">
+        <option value="">Sélectionnez une catégorie</option>
+        @foreach (var category in categories)
+        {
+            <option value="@category.CategoryID">@category.Name</option>
+        }
+    </InputSelect>
+
+    <button type="button" class="btn btn-secondary" @onclick="OpenNewItemModal">Ajouter une nouvelle catégorie</button>
+</div>
+
+@if (showNewItemModal)
+{
+    <div class="modal show d-block" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Créer une nouvelle catégorie</h5>
+                <button type="button" class="btn-close" @onclick="CloseNewItemModal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newItem">Nom de la catégorie</label>
+                    <InputText id="newItem" @bind-Value="newItemName" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseNewItemModal">Fermer</button>
+                <button type="button" class="btn btn-primary" @onclick="AddNewItem">Enregistrer la catégorie</button>
+            </div>
+        </div>
+    </div>
+</div>
+}

@@ -1,32 +1,4 @@
 @page "/"
-@inject HttpClient Http
 @using BouillonChanvre.Models
 
-<h3>Recipes</h3>
-
-@if (recipes == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <ul>
-        @foreach (var recipe in recipes)
-        {
-            <li>
-                <h4>@recipe.Title</h4>
-                <p>@recipe.Description</p>
-                <img src="@recipe.ImageUrl" alt="@recipe.Title" style="width: 200px;" />
-            </li>
-        }
-    </ul>
-}
-
-@code {
-    private List<Recipe> recipes;
-
-    protected override async Task OnInitializedAsync()
-    {
-        recipes = await Http.GetFromJsonAsync<List<Recipe>>("api/recipes");
-    }
-}
+<h3>Home</h3>

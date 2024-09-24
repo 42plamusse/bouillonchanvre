@@ -1,0 +1,82 @@
+@page "/admin/products/create"
+@page "/admin/products/edit/{ProductID:int}"
+@using BouillonChanvre.Models
+@using BouillonChanvre.Services
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+
+<h3>@(isEditMode ? "Modifier le produit" : "Créer un produit")</h3>
+
+<EditForm Model="product" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Nom du produit</label>
+        <InputText class="form-control" @bind-Value="@product.ProductName" />
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <InputText class="form-control" @bind-Value="@product.ShortDescription" />
+    </div>
+    <CategorySelector SelectedId="@product.CategoryID" OnSelectedIdChanged="OnCategoryChanged" />
+
+    <SubCategorySelector SelectedId="@product.SubCategoryID" OnSelectedIdChanged="OnSubCategoryChanged"
+        CategoryId="@product.CategoryID" />
+    <ValidationSummary />
+    <button type="submit" class="btn btn-primary">Enregistrer le produit</button>
+</EditForm>
+
+@code {
+    private Product product = new Product();
+    private bool isEditMode;
+    [Parameter] public int? ProductID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductID.HasValue)
+        {
+            isEditMode = true;
+            product = await ProductService.GetProductById(ProductID.Value);
+
+            if (product == null)
+            {
+                NavigationManager.NavigateTo("/products");
+            }
+        }
+        else
+        {
+            isEditMode = false;
+            product = new Product();
+            product.ShortDescription = "";
+        }
+    }
+
+    private void OnCategoryChanged(int? id)
+    {
+        product.CategoryID = id ?? 0;
+        StateHasChanged();
+        Console.WriteLine($"Product Category ID = {product.CategoryID}, Product SubCategory ID = {product.SubCategoryID}");
+    }
+
+    private void OnSubCategoryChanged(int? id)
+    {
+        product.SubCategoryID = id ?? 0;
+        StateHasChanged();
+        Console.WriteLine($"Product Category ID = {product.CategoryID}, Product SubCategory ID = {product.SubCategoryID}");
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine($"Product Category ID = {product.CategoryID}, Product SubCategory ID = {product.SubCategoryID}");
+        if (isEditMode)
+        {
+            await ProductService.UpdateProduct(product);
+        }
+        else
+        {
+            Console.WriteLine("Creating product in database");
+            await ProductService.CreateProduct(product);
+        }
+
+        NavigationManager.NavigateTo("/admin/products");
+    }
+}

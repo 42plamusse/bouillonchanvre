@@ -38,8 +38,7 @@ namespace BouillonChanvre.Models
         [StringLength(100)]
         public string ProductName { get; set; }  // Name of the product (e.g., "OLI", "SUPRA", "PIPA")
 
-        [StringLength(500)]
-        public string ShortDescription { get; set; }  // Short description of the product (optional)
+
 
         public int SubCategoryID { get; set; }  // Foreign key to the product subcategory
         public virtual SubCategory Subcategory { get; set; }  // Navigation property to the product subcategory
@@ -104,6 +103,15 @@ namespace BouillonChanvre.Models
     public class ProductDescription
     {
         public int ProductDescriptionID { get; set; }  // Unique identifier for the description
+
+        [StringLength(500)]
+        public string Subtitle { get; set; }
+
+        [StringLength(500)]
+        public string Slogan { get; set; }
+
+        [StringLength(500)]
+        public string Description { get; set; }
 
         [StringLength(1000)]
         public string Ingredients { get; set; }  // Ingredients list

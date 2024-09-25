@@ -13,10 +13,6 @@
         <label>Nom du produit</label>
         <InputText class="form-control" @bind-Value="@product.ProductName" />
     </div>
-    <div class="form-group">
-        <label>Description</label>
-        <InputText class="form-control" @bind-Value="@product.ShortDescription" />
-    </div>
     <CategorySelector SelectedId="@product.CategoryID" OnSelectedIdChanged="OnCategoryChanged" />
 
     <SubCategorySelector SelectedId="@product.SubCategoryID" OnSelectedIdChanged="OnSubCategoryChanged"
@@ -46,7 +42,6 @@
         {
             isEditMode = false;
             product = new Product();
-            product.ShortDescription = "";
         }
     }
 

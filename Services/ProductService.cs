@@ -8,17 +8,16 @@ namespace BouillonChanvre.Services
 {
     public class ProductService : IProductService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public ProductService(ApplicationDbContext context)
+        public ProductService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
-        // Common query logic for fetching products with related entities
-        private IQueryable<Product> GetProductQuery()
+        private IQueryable<Product> GetProductQuery(ApplicationDbContext context)
         {
-            return _context.Products
+            return context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Subcategory)
                 .Include(p => p.Variants)
@@ -31,36 +30,44 @@ namespace BouillonChanvre.Services
 
         public async Task<List<Product>> GetAllProducts()
         {
-            return await GetProductQuery().ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+            return await GetProductQuery(context).AsNoTracking().ToListAsync();
         }
 
         public async Task<Product> GetProductById(int productId)
         {
-            return await GetProductQuery()
+            using var context = _contextFactory.CreateDbContext();
+            return await GetProductQuery(context)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.ProductID == productId);
         }
 
         public async Task CreateProduct(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateDbContext();
+            context.Products.Add(product);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateProduct(Product product)
         {
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateDbContext();
+            product.Category = null;
+            product.Subcategory = null;
+            context.Products.Update(product);
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteProduct(int productId)
         {
-            var product = await GetProductQuery()
+            using var context = _contextFactory.CreateDbContext();
+            var product = await GetProductQuery(context)
                 .FirstOrDefaultAsync(p => p.ProductID == productId);
 
             if (product != null)
             {
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                context.Products.Remove(product);
+                await context.SaveChangesAsync();
             }
         }
     }

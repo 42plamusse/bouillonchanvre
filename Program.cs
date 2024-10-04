@@ -9,8 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Conditional configuration for database based on environment
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    // .EnableSensitiveDataLogging()
+    // .EnableDetailedErrors()
+    // .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information));
 }
 else
 {
@@ -18,7 +21,7 @@ else
     var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     var connectionString = rawConnectionString.Replace("{Password}", password);
 
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         options.UseSqlServer(connectionString));
 }
 

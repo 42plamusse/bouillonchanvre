@@ -8,23 +8,25 @@ namespace BouillonChanvre.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public CategoryService(ApplicationDbContext context)
+        public CategoryService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<List<Category>> GetAllCategories()
         {
-            return await _context.Categories.ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Categories.ToListAsync();
         }
 
         public async Task CreateCategory(string categoryName)
         {
+            using var context = _contextFactory.CreateDbContext();
             var category = new Category { Name = categoryName };
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            context.Categories.Add(category);
+            await context.SaveChangesAsync();
         }
     }
 }

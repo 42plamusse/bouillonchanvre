@@ -8,29 +8,27 @@ namespace BouillonChanvre.Services
 {
     public class SubCategoryService : ISubCategoryService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public SubCategoryService(ApplicationDbContext context)
+        public SubCategoryService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
-        // Fetch subcategories based on CategoryID
         public async Task<List<SubCategory>> GetSubCategoriesByCategoryId(int categoryId)
         {
-            return await _context.SubCategories
-                .Where(sc => sc.CategoryID == categoryId)  // Filter by CategoryID
+            using var context = _contextFactory.CreateDbContext();
+            return await context.SubCategories
+                .Where(sc => sc.CategoryID == categoryId)
                 .ToListAsync();
         }
 
-        // Create a new subcategory and link it to a category
         public async Task CreateSubCategory(string subCategoryName, int categoryId)
         {
-            Console.WriteLine($"CATEGORY ID: {categoryId}");
+            using var context = _contextFactory.CreateDbContext();
             var subCategory = new SubCategory { Name = subCategoryName, CategoryID = categoryId };
-            _context.SubCategories.Add(subCategory);
-            await _context.SaveChangesAsync();
+            context.SubCategories.Add(subCategory);
+            await context.SaveChangesAsync();
         }
     }
-
 }

@@ -100,7 +100,6 @@ else
         try
         {
             products = await ProductService.GetAllProducts();
-            products.ForEach(p => Console.WriteLine(p.ProductName));
         }
         catch (Exception ex)
         {

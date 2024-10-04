@@ -5,7 +5,7 @@
 @code {
     [Parameter] public EventCallback<int?> OnSelectedIdChanged { get; set; }
     [Parameter]
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
     [Parameter]
     public int? SelectedId
     {
@@ -38,18 +38,18 @@
     }
     private async Task FetchSubCategories()
     {
-        if (CategoryId == 0)
+        if (CategoryId == null || CategoryId == 0)
             return;
 
-        subCategories = await SubCategoryService.GetSubCategoriesByCategoryId(CategoryId);
+        subCategories = await SubCategoryService.GetSubCategoriesByCategoryId(CategoryId.Value);
 
     }
 
     private async Task AddNewItem()
     {
-        if (!string.IsNullOrWhiteSpace(newItemName))
+        if (!string.IsNullOrWhiteSpace(newItemName) && CategoryId != null || CategoryId != 0)
         {
-            await SubCategoryService.CreateSubCategory(newItemName, CategoryId);
+            await SubCategoryService.CreateSubCategory(newItemName, CategoryId.Value);
             await FetchSubCategories();
             newItemName = string.Empty;
             showNewItemModal = false;

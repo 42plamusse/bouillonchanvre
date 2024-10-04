@@ -32,7 +32,6 @@
     private async Task FetchCategories()
     {
         categories = await CategoryService.GetAllCategories();
-        categories.ForEach(c => Console.WriteLine($"CategoryID: {c.CategoryID}, Name: {c.Name}"));
     }
 
     private async Task AddNewItem()

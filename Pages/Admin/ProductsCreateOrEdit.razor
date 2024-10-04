@@ -15,8 +15,14 @@
     </div>
     <CategorySelector SelectedId="@product.CategoryID" OnSelectedIdChanged="OnCategoryChanged" />
 
-    <SubCategorySelector SelectedId="@product.SubCategoryID" OnSelectedIdChanged="OnSubCategoryChanged"
-        CategoryId="@product.CategoryID" />
+    @if (product.CategoryID != null)
+    {
+        <SubCategorySelector SelectedId="@product.SubCategoryID" OnSelectedIdChanged="OnSubCategoryChanged"
+            CategoryId="@product.CategoryID" />
+    }
+
+    @* <ProductVariantTabs Variants="@product.Variants" /> *@
+
     <ValidationSummary />
     <button type="submit" class="btn btn-primary">Enregistrer le produit</button>
 </EditForm>
@@ -31,6 +37,7 @@
         if (ProductID.HasValue)
         {
             isEditMode = true;
+
             product = await ProductService.GetProductById(ProductID.Value);
 
             if (product == null)
@@ -47,28 +54,26 @@
 
     private void OnCategoryChanged(int? id)
     {
-        product.CategoryID = id ?? 0;
+        product.CategoryID = id ?? null;
+        product.SubCategoryID = null;
         StateHasChanged();
-        Console.WriteLine($"Product Category ID = {product.CategoryID}, Product SubCategory ID = {product.SubCategoryID}");
     }
 
     private void OnSubCategoryChanged(int? id)
     {
-        product.SubCategoryID = id ?? 0;
+        product.SubCategoryID = id ?? null;
         StateHasChanged();
-        Console.WriteLine($"Product Category ID = {product.CategoryID}, Product SubCategory ID = {product.SubCategoryID}");
     }
 
     private async Task HandleValidSubmit()
     {
-        Console.WriteLine($"Product Category ID = {product.CategoryID}, Product SubCategory ID = {product.SubCategoryID}");
         if (isEditMode)
         {
             await ProductService.UpdateProduct(product);
+
         }
         else
         {
-            Console.WriteLine("Creating product in database");
             await ProductService.CreateProduct(product);
         }
 

@@ -40,12 +40,12 @@ namespace BouillonChanvre.Models
 
 
 
-        public int SubCategoryID { get; set; }  // Foreign key to the product subcategory
+        public int? SubCategoryID { get; set; }  // Foreign key to the product subcategory
         public virtual SubCategory Subcategory { get; set; }  // Navigation property to the product subcategory
 
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();  // List of variants for this product (can be just 1)
 
-        public int CategoryID { get; set; }  // Foreign key to the category
+        public int? CategoryID { get; set; }  // Foreign key to the category
         public virtual Category Category { get; set; }  // Navigation property to the category
     }
 

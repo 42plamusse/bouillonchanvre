@@ -1,0 +1,80 @@
+@using BouillonChanvre.Models
+
+<div class="variant-tabs">
+    <ul class="nav nav-tabs">
+        @foreach (var variant in Variants)
+        {
+            <li class="nav-item">
+                <a class="nav-link @(SelectedVariant == variant ? "active" : "")" @onclick="() => SelectVariant(variant)">
+                    @variant.VariantName
+                </a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link" @onclick="AddNewVariant">+ Ajouter une variante</a>
+        </li>
+    </ul>
+
+    <!-- Variant details (sizes for now) -->
+    <div>
+        @if (SelectedVariant != null)
+        {
+            <div class="form-group">
+                <label>Nom de la variante</label>
+                <InputText class="form-control" @bind-Value="@SelectedVariant.VariantName" />
+            </div>
+            <div class="form-group">
+                <label>Type de la variante</label>
+                <InputText class="form-control" @bind-Value="@SelectedVariant.VariantType" />
+            </div>
+            <h5>Tailles de la variante @SelectedVariant.VariantName</h5>
+            <div>
+            @foreach (var size in SelectedVariant.Sizes)
+                {
+                    <div class="form-group">
+                        <label>Taille</label>
+                        <InputNumber class="form-control" @bind-Value="size.Size" />
+                        <label>Prix</label>
+                        <InputNumber class="form-control" @bind-Value="size.Price" />
+                    </div>
+                }
+                <button class="btn btn-secondary" @onclick="AddNewSize">Ajouter une nouvelle taille</button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public ICollection<ProductVariant> Variants { get; set; }
+    @* [Parameter] public EventCallback<ProductVariant> OnVariantChanged { get; set; } *@
+
+    private ProductVariant SelectedVariant { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Variants.Any())
+        {
+            SelectedVariant = Variants.First(); // Select the first variant by default
+        }
+    }
+
+    private void SelectVariant(ProductVariant variant)
+    {
+        SelectedVariant = variant;
+        @* OnVariantChanged.InvokeAsync(SelectedVariant); *@
+    }
+
+    private void AddNewVariant()
+    {
+        var newVariant = new ProductVariant { VariantName = $"Variante {Variants.Count + 1}" };
+        Variants.Add(newVariant);
+        SelectedVariant = newVariant; // Select the newly added variant
+        @* OnVariantChanged.InvokeAsync(SelectedVariant); *@
+    }
+
+    private void AddNewSize()
+    {
+        var newSize = new ProductSize { Size = 100, Price = 0 };
+        SelectedVariant.Sizes.Add(newSize);
+    }
+}

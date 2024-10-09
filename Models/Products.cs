@@ -35,10 +35,8 @@ namespace BouillonChanvre.Models
         public int ProductID { get; set; }  // Unique identifier for the product
 
         [Required]
-        [StringLength(100)]
+        [StringLength(500)]
         public string ProductName { get; set; }  // Name of the product (e.g., "OLI", "SUPRA", "PIPA")
-
-
 
         public int? SubCategoryID { get; set; }  // Foreign key to the product subcategory
         public virtual SubCategory Subcategory { get; set; }  // Navigation property to the product subcategory
@@ -53,11 +51,9 @@ namespace BouillonChanvre.Models
     {
         public int ProductVariantID { get; set; }  // Unique identifier for the variant
 
+        [Required]
         [StringLength(100)]
         public string VariantName { get; set; }  // Name of the variant (optional, e.g., "Argent", "Blanche", "Basilic & Yuzu")
-
-        [StringLength(100)]
-        public string VariantType { get; set; }  // Specific type of variant (optional) for products like "SUPRA" (e.g., "Basilic & Yuzu", "Estragon & Cédrat")
 
         public ICollection<ProductSize> Sizes { get; set; } = new List<ProductSize>();  // Multiple sizes for the product or variant
 
@@ -73,13 +69,18 @@ namespace BouillonChanvre.Models
     {
         public int ProductSizeID { get; set; }  // Unique identifier for the size
 
+        [Required]
+        [StringLength(500)]
+        public string Reference { get; set; }
+
+        [Required]
         [Range(0.0, double.MaxValue)]
         public decimal Size { get; set; }  // Size of the product or variant (e.g., 100ml, 250ml)
 
-        public string SizeUnit { get; set; } = "ml";  // Unit of measurement for size (e.g., "ml", "gr")
+        public SizeUnit SizeUnit { get; set; }  // Unit of measurement for size (e.g., "ml", "gr")
 
-        [Range(0.0, double.MaxValue)]
-        public decimal CBDConcentration { get; set; }  // CBD concentration in mg or percentage
+        [StringLength(300)]
+        public string? CBDConcentration { get; set; }  // CBD concentration in mg or percentage
 
         [Required]
         [Range(0.0, double.MaxValue)]
@@ -105,25 +106,25 @@ namespace BouillonChanvre.Models
         public int ProductDescriptionID { get; set; }  // Unique identifier for the description
 
         [StringLength(500)]
-        public string Subtitle { get; set; }
+        public string? Subtitle { get; set; }
 
         [StringLength(500)]
-        public string Slogan { get; set; }
+        public string? Slogan { get; set; }
 
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [StringLength(1000)]
-        public string Ingredients { get; set; }  // Ingredients list
+        public string? Ingredients { get; set; }  // Ingredients list
 
         [StringLength(2000)]
-        public string Benefits { get; set; }  // Benefits or therapeutic effects
+        public string? Benefits { get; set; }  // Benefits or therapeutic effects
 
         [StringLength(2000)]
-        public string UsageInstructions { get; set; }  // Usage instructions or recipe suggestions
+        public string? UsageInstructions { get; set; }  // Usage instructions or recipe suggestions
 
         [StringLength(2000)]
-        public string ProducerInformation { get; set; }  // Information about the producer (e.g., apiculture details)
+        public string? ProducerInformation { get; set; }  // Information about the producer (e.g., apiculture details)
 
         public int ProductVariantID { get; set; }  // Foreign key to the product variant
         public virtual ProductVariant ProductVariant { get; set; }  // Navigation property to the product variant

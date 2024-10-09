@@ -23,10 +23,6 @@
                 <label>Nom de la variante</label>
                 <InputText class="form-control" @bind-Value="@SelectedVariant.VariantName" />
             </div>
-            <div class="form-group">
-                <label>Type de la variante</label>
-                <InputText class="form-control" @bind-Value="@SelectedVariant.VariantType" />
-            </div>
             <h5>Tailles de la variante @SelectedVariant.VariantName</h5>
             <div>
             @foreach (var size in SelectedVariant.Sizes)
@@ -34,11 +30,22 @@
                     <div class="form-group">
                         <label>Taille</label>
                         <InputNumber class="form-control" @bind-Value="size.Size" />
-                        <label>Prix</label>
+                        <label>Unité</label>
+                        <InputSelect class="form-control" @bind-Value="size.SizeUnit">
+                            @foreach (var sizeUnit in Enum.GetValues(typeof(SizeUnit)))
+                            {
+                                <option value="@sizeUnit">@sizeUnit</option>
+                            }
+                        </InputSelect>
+                        <label>Référence</label>
+                        <InputText class="form-control" @bind-Value="size.Reference" />
+                        <label>Concentration de CBD</label>
+                        <InputText class="form-control" @bind-Value="size.CBDConcentration" />
+                        <label>Prix (euro)</label>
                         <InputNumber class="form-control" @bind-Value="size.Price" />
                     </div>
                 }
-                <button class="btn btn-secondary" @onclick="AddNewSize">Ajouter une nouvelle taille</button>
+                <button type="button" class="btn btn-secondary" @onclick="AddNewSize">Ajouter une nouvelle taille</button>
             </div>
         }
     </div>

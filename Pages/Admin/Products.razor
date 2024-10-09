@@ -4,9 +4,9 @@
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
 
-<h3>Products</h3>
+<h3>Produits</h3>
 
-<button @onclick="CreateNewProduct">Create New Product</button>
+<button @onclick="CreateNewProduct">Nouveau produit</button>
 
 @if (products == null)
 {
@@ -21,12 +21,11 @@ else
     <table class="table">
     <thead>
         <tr>
-            <th>Category</th>
-            <th>SubCategory</th>
-            <th>Product Name</th>
-            <th>Variant</th>
-            <th>Size</th>
-            <th>Price</th>
+            <th>Référence</th>
+            <th>Produit</th>
+            <th>Prix (euro)</th>
+            <th>Catégorie</th>
+            <th>Sous-catégorie</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -42,12 +41,11 @@ else
                             foreach (var size in variant.Sizes)
                             {
                                 <tr>
+                                    <td>@size.Reference</td>
+                                    <td>@product.ProductName - @variant.VariantName (@size.Size@size.SizeUnit)</td>
+                                    <td>@size.Price</td>
                                     <td>@(product.Category?.Name ?? "No Category")</td>
                                     <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
-                                    <td>@product.ProductName</td>
-                                    <td>@variant.VariantName</td>
-                                    <td>@size.Size @size.SizeUnit</td>
-                                    <td>@size.Price</td>
                                     <td>
                                         <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
                                         <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
@@ -58,12 +56,11 @@ else
                         else
                         {
                             <tr>
+                                <td>-</td>
+                                <td>@product.ProductName @variant.VariantName</td>
+                                <td>-</td>
                                 <td>@(product.Category?.Name ?? "No Category")</td>
                                 <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
-                                <td>@product.ProductName</td>
-                                <td>@variant.VariantName</td>
-                                <td>No Size Available</td>
-                                <td>-</td>
                                 <td>
                                     <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
                                     <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
@@ -75,12 +72,11 @@ else
                 else
                 {
                     <tr>
+                        <td>-</td>
+                        <td>@product.ProductName</td>
+                        <td>-</td>
                         <td>@(product.Category?.Name ?? "No Category")</td>
                         <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
-                        <td>@product.ProductName</td>
-                        <td>No Variant Available</td>
-                        <td>No Size Available</td>
-                        <td>No Price Available</td>
                         <td>
                             <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
                             <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>

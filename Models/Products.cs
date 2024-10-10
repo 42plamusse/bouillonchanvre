@@ -41,6 +41,7 @@ namespace BouillonChanvre.Models
         public int? SubCategoryID { get; set; }  // Foreign key to the product subcategory
         public virtual SubCategory Subcategory { get; set; }  // Navigation property to the product subcategory
 
+        [MinLength(1, ErrorMessage = "Un produit doit contenir au moins une variante.")]
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();  // List of variants for this product (can be just 1)
 
         public int? CategoryID { get; set; }  // Foreign key to the category
@@ -51,10 +52,10 @@ namespace BouillonChanvre.Models
     {
         public int ProductVariantID { get; set; }  // Unique identifier for the variant
 
-        [Required]
         [StringLength(100)]
-        public string VariantName { get; set; }  // Name of the variant (optional, e.g., "Argent", "Blanche", "Basilic & Yuzu")
+        public string? VariantName { get; set; }  // Name of the variant (optional, e.g., "Argent", "Blanche", "Basilic & Yuzu")
 
+        [MinLength(1, ErrorMessage = "Une variante doit contenir au moins une taille.")]
         public ICollection<ProductSize> Sizes { get; set; } = new List<ProductSize>();  // Multiple sizes for the product or variant
 
         public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();  // Collection of images for the product or variant

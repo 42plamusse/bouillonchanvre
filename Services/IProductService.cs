@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using BouillonChanvre.Models;
 
@@ -11,5 +12,6 @@ namespace BouillonChanvre.Services
         Task CreateProduct(Product product);                       // Create a new product
         Task UpdateProduct(Product product);                       // Update an existing product
         Task DeleteProduct(int productId);                         // Delete a product by ID
+        bool ValidateProduct(Product product, out List<ValidationResult> validationResults);
     }
 }

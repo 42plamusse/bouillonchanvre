@@ -2,16 +2,20 @@
 @page "/admin/products/edit/{ProductID:int}"
 @using BouillonChanvre.Models
 @using BouillonChanvre.Services
+@using System.ComponentModel.DataAnnotations
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
 
 <h3>@(isEditMode ? "Modifier le produit" : "Créer un produit")</h3>
 
-<EditForm Model="product" OnValidSubmit="HandleValidSubmit">
+<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
+    <ValidationSummary />
+
     <div class="form-group">
         <label>Nom du produit</label>
         <InputText class="form-control" @bind-Value="@product.ProductName" />
+        <ValidationMessage For="@(() => product.ProductName)" />
     </div>
     <CategorySelector SelectedId="@product.CategoryID" OnSelectedIdChanged="OnCategoryChanged" />
 
@@ -23,13 +27,15 @@
 
     <ProductVariantTabs Variants="@product.Variants" />
 
-    <ValidationSummary />
     <button type="submit" class="btn btn-primary">Enregistrer le produit</button>
 </EditForm>
 
 @code {
     private Product product = new Product();
+    private List<ValidationResult> validationResults = new List<ValidationResult>();
     private bool isEditMode;
+    private EditContext editContext;
+
     [Parameter] public int? ProductID { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -50,6 +56,9 @@
             isEditMode = false;
             product = new Product();
         }
+
+        // Create EditContext for the product
+        editContext = new EditContext(product);
     }
 
     private void OnCategoryChanged(int? id)
@@ -67,16 +76,40 @@
 
     private async Task HandleValidSubmit()
     {
-        if (isEditMode)
-        {
-            await ProductService.UpdateProduct(product);
+        Console.WriteLine("Submitting");
 
+        if (ProductService.ValidateProduct(product, out validationResults))
+        {
+            // Validation failed, inform Blazor about the validation errors
+            foreach (var validationResult in validationResults)
+            {
+                Console.WriteLine(validationResult.ErrorMessage);
+
+            }
+
+            if (isEditMode)
+            {
+                await ProductService.UpdateProduct(product);
+            }
+            else
+            {
+                await ProductService.CreateProduct(product);
+            }
+
+            NavigationManager.NavigateTo("/admin/products");
         }
         else
         {
-            await ProductService.CreateProduct(product);
+            // Validation failed, inform Blazor about the validation errors
+            foreach (var validationResult in validationResults)
+            {
+                // Add validation errors to ModelState to be displayed in ValidationSummary
+                foreach (var memberName in validationResult.MemberNames)
+                {
+                    var fieldIdentifier = new FieldIdentifier(product, memberName);
+                    editContext.NotifyFieldChanged(fieldIdentifier);
+                }
+            }
         }
-
-        NavigationManager.NavigateTo("/admin/products");
     }
 }

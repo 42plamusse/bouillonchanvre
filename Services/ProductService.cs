@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using BouillonChanvre.Data;
 using BouillonChanvre.Models;
 
@@ -69,6 +68,31 @@ namespace BouillonChanvre.Services
                 context.Products.Remove(product);
                 await context.SaveChangesAsync();
             }
+        }
+
+        public bool ValidateProduct(Product product, out List<ValidationResult> validationResults)
+        {
+            validationResults = new List<ValidationResult>();
+            var context = new ValidationContext(product);
+
+            bool isValid = Validator.TryValidateObject(product, context, validationResults, true);
+
+            foreach (var variant in product.Variants)
+            {
+                var variantContext = new ValidationContext(variant);
+                isValid = Validator.TryValidateObject(variant, variantContext, validationResults, true) && isValid;
+                Console.WriteLine("Checking validation");
+                // Manual check for Sizes collection
+                if (variant.Sizes == null || variant.Sizes.Count == 0)
+                {
+                    Console.WriteLine("In ?");
+
+                    validationResults.Add(new ValidationResult("Une variante doit contenir au moins une taille.", new[] { "Sizes" }));
+                    isValid = false;
+                }
+            }
+
+            return isValid;
         }
     }
 }

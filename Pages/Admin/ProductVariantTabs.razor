@@ -20,7 +20,7 @@
         @if (SelectedVariant != null)
         {
             <div class="form-group">
-                <label>Nom de la variante</label>
+                <label>Nom de la variante (optionnel)</label>
                 <InputText class="form-control" @bind-Value="@SelectedVariant.VariantName" />
             </div>
             <h5>Tailles de la variante @SelectedVariant.VariantName</h5>
@@ -63,6 +63,10 @@
         {
             SelectedVariant = Variants.First(); // Select the first variant by default
         }
+        else
+        {
+            AddNewVariant();
+        }
     }
 
     private void SelectVariant(ProductVariant variant)
@@ -76,12 +80,13 @@
         var newVariant = new ProductVariant { VariantName = $"Variante {Variants.Count + 1}" };
         Variants.Add(newVariant);
         SelectedVariant = newVariant; // Select the newly added variant
+        AddNewSize();
         @* OnVariantChanged.InvokeAsync(SelectedVariant); *@
     }
 
     private void AddNewSize()
     {
-        var newSize = new ProductSize { Size = 100, Price = 0 };
+        var newSize = new ProductSize { Size = 100.0m, Price = 0.0m };
         SelectedVariant.Sizes.Add(newSize);
     }
 }

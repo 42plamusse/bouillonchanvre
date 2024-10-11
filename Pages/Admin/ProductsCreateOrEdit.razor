@@ -8,27 +8,55 @@
 
 <h3>@(isEditMode ? "Modifier le produit" : "Créer un produit")</h3>
 
-<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
+@if (editContext != null)
+{
+    <EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
-    <div class="form-group">
-        <label>Nom du produit</label>
-        <InputText class="form-control" @bind-Value="@product.ProductName" />
-        <ValidationMessage For="@(() => product.ProductName)" />
-    </div>
-    <CategorySelector SelectedId="@product.CategoryID" OnSelectedIdChanged="OnCategoryChanged" />
+    <!-- Basic Info Card -->
+    <MudCard Class="my-3">
+        <MudCardContent>
+            <MudText Typo="Typo.h6">Informations de base</MudText>
 
-    @if (product.CategoryID != null)
-    {
-        <SubCategorySelector SelectedId="@product.SubCategoryID" OnSelectedIdChanged="OnSubCategoryChanged"
-            CategoryId="@product.CategoryID" />
-    }
+            <MudTextField Label="Nom du produit" @bind-Value="@product.ProductName" Required="true" />
+            <ValidationMessage For="@(() => product.ProductName)" />
+        </MudCardContent>
+    </MudCard>
 
-    <ProductVariantTabs Variants="@product.Variants" />
+    <!-- Category Card -->
+    <MudCard Class="my-3">
+        <MudCardContent>
+            <MudText Typo="Typo.h6">Catégories</MudText>
 
-    <button type="submit" class="btn btn-primary">Enregistrer le produit</button>
-</EditForm>
+            <CategorySelector SelectedId="@product.CategoryID" OnSelectedIdChanged="OnCategoryChanged" />
+            @if (product.CategoryID != null)
+                {
+                    <SubCategorySelector SelectedId="@product.SubCategoryID" OnSelectedIdChanged="OnSubCategoryChanged"
+                        CategoryId="@product.CategoryID" />
+                }
+            </MudCardContent>
+        </MudCard>
+
+        <!-- Variants Card -->
+        <MudCard Class="my-3">
+            <MudCardContent>
+                <MudText Typo="Typo.h6">Variantes</MudText>
+
+                <ProductVariantTabs Variants="@product.Variants" />
+            </MudCardContent>
+        </MudCard>
+
+        <ValidationSummary />
+        <!-- Submit Button -->
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">
+            Enregistrer le produit
+        </MudButton>
+    </EditForm>
+}
+else
+{
+    <MudText Typo="Typo.body1">Loading...</MudText>
+}
 
 @code {
     private Product product = new Product();
@@ -80,13 +108,6 @@
 
         if (ProductService.ValidateProduct(product, out validationResults))
         {
-            // Validation failed, inform Blazor about the validation errors
-            foreach (var validationResult in validationResults)
-            {
-                Console.WriteLine(validationResult.ErrorMessage);
-
-            }
-
             if (isEditMode)
             {
                 await ProductService.UpdateProduct(product);
@@ -103,7 +124,6 @@
             // Validation failed, inform Blazor about the validation errors
             foreach (var validationResult in validationResults)
             {
-                // Add validation errors to ModelState to be displayed in ValidationSummary
                 foreach (var memberName in validationResult.MemberNames)
                 {
                     var fieldIdentifier = new FieldIdentifier(product, memberName);

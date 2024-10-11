@@ -8,7 +8,7 @@ namespace BouillonChanvre.Models
         public int CategoryID { get; set; }  // Unique identifier
 
         [Required]
-        [StringLength(100)]
+        [StringLength(200)]
         public string Name { get; set; }  // Category name (e.g., "Huile Infusées", "Condiments", "Miels")
         public ICollection<SubCategory> SubCategories { get; set; } = new List<SubCategory>();  // List of subcategories
         public ICollection<Product> Products { get; set; } = new List<Product>();  // List of products under this category
@@ -19,7 +19,7 @@ namespace BouillonChanvre.Models
         public int SubCategoryID { get; set; }  // Unique identifier for the subcategory
 
         [Required]
-        [StringLength(100)]
+        [StringLength(200)]
         public string Name { get; set; }  // Name of the subcategory (e.g., "Huile d'olive", "Sauce", "Hydro-Miel de lavande")
 
         // Foreign Key to Category
@@ -55,7 +55,6 @@ namespace BouillonChanvre.Models
         [StringLength(100)]
         public string? VariantName { get; set; }  // Name of the variant (optional, e.g., "Argent", "Blanche", "Basilic & Yuzu")
 
-        [MinLength(1, ErrorMessage = "Une variante doit contenir au moins une taille.")]
         public ICollection<ProductSize> Sizes { get; set; } = new List<ProductSize>();  // Multiple sizes for the product or variant
 
         public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();  // Collection of images for the product or variant
@@ -70,22 +69,19 @@ namespace BouillonChanvre.Models
     {
         public int ProductSizeID { get; set; }  // Unique identifier for the size
 
-        [Required]
         [StringLength(500)]
-        public string Reference { get; set; }
+        public string? Reference { get; set; }
 
-        [Required]
         [Range(0.0, double.MaxValue)]
-        public decimal Size { get; set; }  // Size of the product or variant (e.g., 100ml, 250ml)
+        public decimal? Size { get; set; }  // Size of the product or variant (e.g., 100ml, 250ml)
 
         public SizeUnit SizeUnit { get; set; }  // Unit of measurement for size (e.g., "ml", "gr")
 
         [StringLength(300)]
         public string? CBDConcentration { get; set; }  // CBD concentration in mg or percentage
 
-        [Required]
         [Range(0.0, double.MaxValue)]
-        public decimal Price { get; set; }  // Price for this specific size
+        public decimal? Price { get; set; }  // Price for this specific size
 
         public int ProductVariantID { get; set; }  // Foreign key to the product variant
         public virtual ProductVariant ProductVariant { get; set; }  // Navigation property to the product variant

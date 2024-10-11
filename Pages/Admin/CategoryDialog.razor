@@ -1,0 +1,28 @@
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string CategoryName { get; set; }
+
+    private void Save()
+    {
+        MudDialog.Close(DialogResult.Ok(CategoryName));
+    }
+
+    private void Cancel()
+    {
+        Console.WriteLine("Cancel");
+        MudDialog.Cancel();
+    }
+}
+<MudDialog>
+    <TitleContent>
+        Créer une nouvelle catégorie
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Label="Nom de la catégorie" @bind-Value="CategoryName" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Fermer</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary">Enregistrer</MudButton>
+    </DialogActions>
+</MudDialog>

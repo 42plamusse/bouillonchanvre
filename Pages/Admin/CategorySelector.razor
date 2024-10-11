@@ -1,12 +1,11 @@
 @using BouillonChanvre.Models
 @using BouillonChanvre.Services
 @inject ICategoryService CategoryService
+@inject IDialogService DialogService
 
 @code {
     private int? _selectedId;
     private List<Category> categories = new List<Category>();
-    private bool showNewItemModal = false;
-    private string newItemName = "";
 
     [Parameter]
     public int? SelectedId
@@ -34,62 +33,35 @@
         categories = await CategoryService.GetAllCategories();
     }
 
-    private async Task AddNewItem()
+    private async Task OpenNewItemModal()
     {
-        if (!string.IsNullOrWhiteSpace(newItemName))
+        var parameters = new DialogParameters();
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialogReference = DialogService.Show<CategoryDialog>("Créer une nouvelle catégorie", parameters, options);
+        var result = await dialogReference.Result;
+
+        if (result != null && !result.Canceled && result.Data is string newItemName && !string.IsNullOrWhiteSpace(newItemName))
         {
             await CategoryService.CreateCategory(newItemName);
             await FetchCategories();
-            newItemName = string.Empty;
-            showNewItemModal = false;
         }
     }
 
-    private void OpenNewItemModal()
-    {
-        showNewItemModal = true;
-    }
-
-    private void CloseNewItemModal()
-    {
-        showNewItemModal = false;
-        newItemName = string.Empty;
-    }
 }
 
 <div class="form-group">
-    <label>Catégorie</label>
-    <InputSelect class="form-control" @bind-Value="SelectedId" TValue="int?">
-        <option value="">Sélectionnez une catégorie</option>
-        @foreach (var category in categories)
-        {
-            <option value="@category.CategoryID">@category.Name</option>
-        }
-    </InputSelect>
+    <MudStack Row Class="py-1">
 
-    <button type="button" class="btn btn-secondary" @onclick="OpenNewItemModal">Ajouter une nouvelle catégorie</button>
+        <MudSelect T="int?" @bind-Value="SelectedId" Label="Sélectionnez une catégorie">
+            <MudSelectItem T="int?" Value="null"><span>Choisir une catégorie</span></MudSelectItem>
+            @foreach (var category in categories)
+            {
+                <MudSelectItem T="int?" Value="@category.CategoryID">@category.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@OpenNewItemModal" Variant="Variant.Filled">Nouvelle
+            catégorie
+        </MudButton>
+    </MudStack>
 </div>
-
-@if (showNewItemModal)
-{
-    <div class="modal show d-block" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Créer une nouvelle catégorie</h5>
-                <button type="button" class="btn-close" @onclick="CloseNewItemModal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newItem">Nom de la catégorie</label>
-                    <InputText id="newItem" @bind-Value="newItemName" class="form-control" />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @onclick="CloseNewItemModal">Fermer</button>
-                <button type="button" class="btn btn-primary" @onclick="AddNewItem">Enregistrer la catégorie</button>
-            </div>
-        </div>
-    </div>
-</div>
-}

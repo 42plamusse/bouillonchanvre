@@ -1,5 +1,6 @@
 using BouillonChanvre.Data;
-using BouillonChanvre.Services; // For ProductService
+using BouillonChanvre.Services;
+using MudBlazor.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 // Add Razor Pages and Blazor Server support
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

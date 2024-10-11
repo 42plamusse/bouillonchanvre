@@ -4,92 +4,55 @@
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
 
-<h3>Produits</h3>
-
-<button @onclick="CreateNewProduct">Nouveau produit</button>
-
-@if (products == null)
-{
-    <p>Loading products...</p>
-}
-else if (products.Count == 0)
-{
-    <p>No products available.</p>
-}
-else
-{
-    <table class="table">
-    <thead>
-        <tr>
-            <th>Référence</th>
-            <th>Produit</th>
-            <th>Prix (euro)</th>
-            <th>Catégorie</th>
-            <th>Sous-catégorie</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var product in products)
-            {
-                if (product.Variants != null && product.Variants.Count > 0)
+<MudStack Row Class="py-3">
+    <MudText Typo="Typo.h4" Align="Align.Left">Produits</MudText>
+    <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@CreateNewProduct" Variant="Variant.Filled">Nouveau
+    </MudButton>
+</MudStack>
+<MudDataGrid Items="@products" Filterable="false" SortMode="@SortMode.None" Groupable="false" Loading="@isLoading"
+    EmptyDataContent="No products available.">
+    <Columns>
+        <PropertyColumn Property="x => x.ProductName" Title="Nom" />
+        <PropertyColumn Property="x => x.Category.Name" Title="Catégorie" />
+        <PropertyColumn Property="x => x.Subcategory.Name" Title="Sous-catégorie" />
+        <TemplateColumn Title="Variantes">
+            <CellTemplate Context="productContext">
+                @if (productContext.Item.Variants?.Count > 0)
                 {
-                    foreach (var variant in product.Variants)
+                    foreach (var variant in productContext.Item.Variants)
                     {
-                        if (variant.Sizes != null && variant.Sizes.Count > 0)
+                        if (variant.Sizes?.Count > 0)
                         {
-                            foreach (var size in variant.Sizes)
+                            foreach (var size in variant.Sizes.OrderBy(s => s.Size))
                             {
-                                <tr>
-                                    <td>@size.Reference</td>
-                                    <td>@product.ProductName - @variant.VariantName (@size.Size@size.SizeUnit)</td>
-                                    <td>@size.Price</td>
-                                    <td>@(product.Category?.Name ?? "No Category")</td>
-                                    <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
-                                    <td>
-                                        <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
-                                        <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
-                                    </td>
-                                </tr>
+                                <MudText Typo="Typo.inherit">@size.Reference - @(string.IsNullOrWhiteSpace(variant.VariantName) ? "" :
+                    variant.VariantName)
+                                    (@size.Size@size.SizeUnit) : @size.Price €</MudText>
                             }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td>-</td>
-                                <td>@product.ProductName @variant.VariantName</td>
-                                <td>-</td>
-                                <td>@(product.Category?.Name ?? "No Category")</td>
-                                <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
-                                <td>
-                                    <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
-                                    <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
-                                </td>
-                            </tr>
                         }
                     }
                 }
                 else
                 {
-                    <tr>
-                        <td>-</td>
-                        <td>@product.ProductName</td>
-                        <td>-</td>
-                        <td>@(product.Category?.Name ?? "No Category")</td>
-                        <td>@(product.Subcategory?.Name ?? "No Subcategory")</td>
-                        <td>
-                            <button @onclick="() => EditProduct(product.ProductID)">Edit</button>
-                            <button @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
-                        </td>
-                    </tr>
+                    <MudText>No Variants</MudText>
                 }
-            }
-        </tbody>
-    </table>
-}
+            </CellTemplate>
+
+        </TemplateColumn>
+        <TemplateColumn Title="Actions">
+            <CellTemplate Context="productContext">
+                <MudButton OnClick="@(() => EditProduct(productContext.Item.ProductID))" Variant="Variant.Filled">Edit
+                </MudButton>
+                <MudButton OnClick="@(() => DeleteProduct(productContext.Item.ProductID))" Variant="Variant.Outlined"
+                    Color="Color.Error">Delete</MudButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
 
 @code {
     private List<Product> products;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,6 +63,10 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching products: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

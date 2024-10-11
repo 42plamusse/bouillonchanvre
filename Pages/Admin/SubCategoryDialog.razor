@@ -1,0 +1,28 @@
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string SubCategoryName { get; set; }
+
+    private void Save()
+    {
+        MudDialog.Close(DialogResult.Ok(SubCategoryName));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+
+<MudDialog>
+    <TitleContent>
+        Créer une nouvelle sous-catégorie
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Label="Nom de la sous-catégorie" @bind-Value="SubCategoryName" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Fermer</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary">Enregistrer</MudButton>
+    </DialogActions>
+</MudDialog>

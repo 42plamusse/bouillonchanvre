@@ -1,67 +1,51 @@
 @using BouillonChanvre.Models
+@using MudBlazor
 
-<div class="variant-tabs">
-    <ul class="nav nav-tabs">
-        @foreach (var variant in Variants)
-        {
-            <li class="nav-item">
-                <a class="nav-link @(SelectedVariant == variant ? "active" : "")" @onclick="() => SelectVariant(variant)">
-                    @variant.VariantName
-                </a>
-            </li>
-        }
-        <li class="nav-item">
-            <a class="nav-link" @onclick="AddNewVariant">+ Ajouter une variante</a>
-        </li>
-    </ul>
+<MudStack Row Class="py-3">
+    <MudText Typo="Typo.h6">Variantes</MudText>
 
-    <!-- Variant details (sizes for now) -->
-    <div>
-        @if (SelectedVariant != null)
-        {
+    <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddNewVariant" Variant="Variant.Filled">Ajouter
+    </MudButton>
+</MudStack>
+<MudTabs @bind-ActivePanelIndex="SelectedVariantIndex">
+    <!-- Display variant tabs -->
+    @foreach (var variant in Variants)
+    {
+        <MudTabPanel Text="@GetVariantDisplayText(variant)">
+            <!-- Variant details (sizes for now) -->
             <div class="form-group">
-                <label>Nom de la variante (optionnel)</label>
-                <InputText class="form-control" @bind-Value="@SelectedVariant.VariantName" />
-            </div>
-            <h5>Tailles de la variante @SelectedVariant.VariantName</h5>
-            <div>
-            @foreach (var size in SelectedVariant.Sizes)
-                {
-                    <div class="form-group">
-                        <label>Taille</label>
-                        <InputNumber class="form-control" @bind-Value="size.Size" />
-                        <label>Unité</label>
-                        <InputSelect class="form-control" @bind-Value="size.SizeUnit">
-                            @foreach (var sizeUnit in Enum.GetValues(typeof(SizeUnit)))
-                            {
-                                <option value="@sizeUnit">@sizeUnit</option>
-                            }
-                        </InputSelect>
-                        <label>Référence</label>
-                        <InputText class="form-control" @bind-Value="size.Reference" />
-                        <label>Concentration de CBD</label>
-                        <InputText class="form-control" @bind-Value="size.CBDConcentration" />
-                        <label>Prix (euro)</label>
-                        <InputNumber class="form-control" @bind-Value="size.Price" />
-                    </div>
-                }
-                <button type="button" class="btn btn-secondary" @onclick="AddNewSize">Ajouter une nouvelle taille</button>
-            </div>
-        }
-    </div>
-</div>
+                <MudTextField Label="Nom de la variante (optionnel)" @bind-Value="@variant.VariantName" />
 
-@code {
+                <MudNumericField @bind-Value="variant.Size" Label="Taille" />
+
+                <MudSelect T="SizeUnit" @bind-Value="variant.SizeUnit" Label="Unité">
+                    @foreach (SizeUnit sizeUnit in Enum.GetValues(typeof(SizeUnit)))
+                    {
+                        <MudSelectItem Value="@sizeUnit">@sizeUnit</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudTextField Label="Référence" @bind-Value="variant.Reference" />
+
+                <MudTextField Label="Concentration de CBD" @bind-Value="variant.CBDConcentration" />
+
+                <MudNumericField @bind-Value="variant.Price" Label="Prix (euro)" />
+                <MudNumericField @bind-Value="variant.Stock" Label="Stock" />
+            </div>
+        </MudTabPanel>
+    }
+    </MudTabs>
+
+
+    @code {
     [Parameter] public ICollection<ProductVariant> Variants { get; set; }
-    @* [Parameter] public EventCallback<ProductVariant> OnVariantChanged { get; set; } *@
-
-    private ProductVariant SelectedVariant { get; set; }
+    private int SelectedVariantIndex { get; set; }
 
     protected override void OnInitialized()
     {
         if (Variants.Any())
         {
-            SelectedVariant = Variants.First(); // Select the first variant by default
+            SelectedVariantIndex = 0; // Select the first variant by default
         }
         else
         {
@@ -69,24 +53,15 @@
         }
     }
 
-    private void SelectVariant(ProductVariant variant)
-    {
-        SelectedVariant = variant;
-        @* OnVariantChanged.InvokeAsync(SelectedVariant); *@
-    }
-
     private void AddNewVariant()
     {
-        var newVariant = new ProductVariant { VariantName = $"Variante {Variants.Count + 1}" };
+        var newVariant = new ProductVariant { VariantName = $"Variante" };
         Variants.Add(newVariant);
-        SelectedVariant = newVariant; // Select the newly added variant
-        AddNewSize();
-        @* OnVariantChanged.InvokeAsync(SelectedVariant); *@
+        SelectedVariantIndex = Variants.Count - 1; // Select the newly added variant
     }
 
-    private void AddNewSize()
+    private string GetVariantDisplayText(ProductVariant variant)
     {
-        var newSize = new ProductSize { Size = 100.0m, Price = 0.0m };
-        SelectedVariant.Sizes.Add(newSize);
+        return $"{(string.IsNullOrWhiteSpace(variant.VariantName) ? "" : variant.VariantName + " ")}{variant.Size}{(variant.Size > 0 ? variant.SizeUnit : "")}";
     }
 }

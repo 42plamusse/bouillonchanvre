@@ -52,25 +52,11 @@ namespace BouillonChanvre.Models
     {
         public int ProductVariantID { get; set; }  // Unique identifier for the variant
 
-        [StringLength(100)]
-        public string? VariantName { get; set; }  // Name of the variant (optional, e.g., "Argent", "Blanche", "Basilic & Yuzu")
-
-        public ICollection<ProductSize> Sizes { get; set; } = new List<ProductSize>();  // Multiple sizes for the product or variant
-
-        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();  // Collection of images for the product or variant
-
-        public ProductDescription Description { get; set; }  // Detailed description for this specific product or variant
-
-        public int ProductID { get; set; }  // Foreign key to the product
-        public virtual Product Product { get; set; }  // Navigation property to the product
-    }
-
-    public class ProductSize
-    {
-        public int ProductSizeID { get; set; }  // Unique identifier for the size
-
         [StringLength(500)]
         public string? Reference { get; set; }
+
+        [StringLength(100)]
+        public string? VariantName { get; set; }  // Name of the variant (optional, e.g., "Argent", "Blanche", "Basilic & Yuzu")
 
         [Range(0.0, double.MaxValue)]
         public decimal? Size { get; set; }  // Size of the product or variant (e.g., 100ml, 250ml)
@@ -83,8 +69,16 @@ namespace BouillonChanvre.Models
         [Range(0.0, double.MaxValue)]
         public decimal? Price { get; set; }  // Price for this specific size
 
-        public int ProductVariantID { get; set; }  // Foreign key to the product variant
-        public virtual ProductVariant ProductVariant { get; set; }  // Navigation property to the product variant
+        [Range(0, int.MaxValue)]
+        public int? Stock { get; set; }
+
+        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();  // Collection of images for the product or variant
+
+        public ProductDescription Description { get; set; }  // Detailed description for this specific product or variant
+
+        public int ProductID { get; set; }  // Foreign key to the product
+
+        public virtual Product Product { get; set; }  // Navigation property to the product
     }
 
     public class ProductImage

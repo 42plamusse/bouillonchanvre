@@ -20,8 +20,6 @@ namespace BouillonChanvre.Services
                 .Include(p => p.Category)
                 .Include(p => p.Subcategory)
                 .Include(p => p.Variants)
-                    .ThenInclude(v => v.Sizes)
-                .Include(p => p.Variants)
                     .ThenInclude(v => v.Images)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Description);
@@ -81,15 +79,6 @@ namespace BouillonChanvre.Services
             {
                 var variantContext = new ValidationContext(variant);
                 isValid = Validator.TryValidateObject(variant, variantContext, validationResults, true) && isValid;
-                Console.WriteLine("Checking validation");
-                // Manual check for Sizes collection
-                if (variant.Sizes == null || variant.Sizes.Count == 0)
-                {
-                    Console.WriteLine("In ?");
-
-                    validationResults.Add(new ValidationResult("Une variante doit contenir au moins une taille.", new[] { "Sizes" }));
-                    isValid = false;
-                }
             }
 
             return isValid;

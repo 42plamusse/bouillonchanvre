@@ -12,7 +12,6 @@ namespace BouillonChanvre.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
-        public DbSet<ProductSize> ProductSizes { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductDescription> ProductDescriptions { get; set; }
 

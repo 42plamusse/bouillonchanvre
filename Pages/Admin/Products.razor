@@ -21,15 +21,10 @@
                 {
                     foreach (var variant in productContext.Item.Variants)
                     {
-                        if (variant.Sizes?.Count > 0)
-                        {
-                            foreach (var size in variant.Sizes.OrderBy(s => s.Size))
-                            {
-                                <MudText Typo="Typo.inherit">@size.Reference - @(string.IsNullOrWhiteSpace(variant.VariantName) ? "" :
+                        <MudText>@variant.Reference - @(string.IsNullOrWhiteSpace(variant.VariantName) ? ""
+                    :
                     variant.VariantName)
-                                    (@size.Size@size.SizeUnit) : @size.Price €</MudText>
-                            }
-                        }
+                            (@variant.Size@variant.SizeUnit) : @variant.Price €</MudText>
                     }
                 }
                 else

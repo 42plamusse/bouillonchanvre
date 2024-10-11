@@ -54,7 +54,7 @@
     <MudStack Row Class="py-1">
 
         <MudSelect T="int?" @bind-Value="SelectedId" Label="Sélectionnez une catégorie">
-            <MudSelectItem T="int?" Value="null"><span>Choisir une catégorie</span></MudSelectItem>
+            <MudSelectItem T="int?" Value="null"><span>Sélectionnez une catégorie</span></MudSelectItem>
             @foreach (var category in categories)
             {
                 <MudSelectItem T="int?" Value="@category.CategoryID">@category.Name</MudSelectItem>

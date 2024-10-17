@@ -51,17 +51,25 @@
 }
 
 <div class="form-group">
-    <MudStack Row Class="py-1">
+    <MudGrid Class="py-4">
 
-        <MudSelect T="int?" @bind-Value="SelectedId" Label="Sélectionnez une catégorie">
-            <MudSelectItem T="int?" Value="null"><span>Sélectionnez une catégorie</span></MudSelectItem>
-            @foreach (var category in categories)
-            {
-                <MudSelectItem T="int?" Value="@category.CategoryID">@category.Name</MudSelectItem>
-            }
-        </MudSelect>
-        <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@OpenNewItemModal" Variant="Variant.Filled">Nouvelle
-            catégorie
-        </MudButton>
-    </MudStack>
+        <MudItem xs="4">
+
+            <MudSelect T="int?" @bind-Value="SelectedId" Label="Sélectionnez une catégorie">
+                <MudSelectItem T="int?" Value="null"><span>Sélectionnez une catégorie</span></MudSelectItem>
+                @foreach (var category in categories)
+                {
+                    <MudSelectItem T="int?" Value="@category.CategoryID">@category.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem>
+
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@OpenNewItemModal" Variant="Variant.Filled">
+                Nouvelle
+                catégorie
+            </MudButton>
+        </MudItem>
+
+    </MudGrid>
 </div>

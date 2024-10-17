@@ -83,5 +83,18 @@ namespace BouillonChanvre.Services
 
             return isValid;
         }
+
+        public async Task DeleteProductVariant(int productVariantId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var productVariant = await context.ProductVariants
+                .FirstOrDefaultAsync(v => v.ProductVariantID == productVariantId);
+
+            if (productVariant != null)
+            {
+                context.ProductVariants.Remove(productVariant);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

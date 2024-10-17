@@ -13,5 +13,6 @@ namespace BouillonChanvre.Services
         Task UpdateProduct(Product product);                       // Update an existing product
         Task DeleteProduct(int productId);                         // Delete a product by ID
         bool ValidateProduct(Product product, out List<ValidationResult> validationResults);
+        Task DeleteProductVariant(int productVariantId);
     }
 }

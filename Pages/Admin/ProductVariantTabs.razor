@@ -1,12 +1,15 @@
 @using BouillonChanvre.Models
 @using MudBlazor
+@using BouillonChanvre.Services
+@inject IProductService ProductService
 
 <MudStack Row Class="py-3">
-    <MudText Typo="Typo.h6">Variantes</MudText>
+    <MudText Typo="Typo.h5">Variantes</MudText>
 
     <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddNewVariant" Variant="Variant.Filled">Ajouter
     </MudButton>
 </MudStack>
+
 <MudTabs @bind-ActivePanelIndex="SelectedVariantIndex">
     <!-- Display variant tabs -->
     @foreach (var variant in Variants)
@@ -14,28 +17,136 @@
         <MudTabPanel Text="@GetVariantDisplayText(variant)">
             <!-- Variant details (sizes for now) -->
             <div class="form-group">
-                <MudTextField Label="Nom de la variante (optionnel)" @bind-Value="@variant.VariantName" />
+                <!-- Variant Name and Reference on the same row -->
+                <MudGrid Class="py-4">
+                    <MudItem sm="6">
+                        <MudTextField Label="Nom de la variante (optionnel)" @bind-Value="@variant.VariantName" />
+                    </MudItem>
+                    <MudItem sm="4">
+                        <MudTextField Label="Référence" @bind-Value="variant.Reference" />
+                    </MudItem>
+                </MudGrid>
 
-                <MudNumericField @bind-Value="variant.Size" Label="Taille" />
+                <!-- Size and Unit -->
+                <MudGrid Class="py-4">
+                    <MudItem sm="2">
+                        <MudNumericField @bind-Value="variant.Size" Label="Taille" />
+                    </MudItem>
+                    <MudItem sm="1">
+                        <MudSelect T="SizeUnit" @bind-Value="variant.SizeUnit" Label="Unité">
+                            @foreach (SizeUnit sizeUnit in Enum.GetValues(typeof(SizeUnit)))
+                            {
+                                <MudSelectItem Value="@sizeUnit">@sizeUnit</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
 
-                <MudSelect T="SizeUnit" @bind-Value="variant.SizeUnit" Label="Unité">
-                    @foreach (SizeUnit sizeUnit in Enum.GetValues(typeof(SizeUnit)))
-                    {
-                        <MudSelectItem Value="@sizeUnit">@sizeUnit</MudSelectItem>
-                    }
-                </MudSelect>
+                <!-- CBD Concentration and Price on the same row -->
+                <MudGrid Class="py-4">
+                    <MudItem sm="6">
+                        <MudTextField Label="Concentration de CBD" @bind-Value="variant.CBDConcentration" />
+                    </MudItem>
+                </MudGrid>
 
-                <MudTextField Label="Référence" @bind-Value="variant.Reference" />
+                <!-- Stock on its own row -->
+                <MudGrid Class="py-4">
+                    <MudItem sm="2">
+                        <MudNumericField @bind-Value="variant.Price" Label="Prix (euro)" />
+                    </MudItem>
+                    <MudItem sm="2">
+                        <MudNumericField @bind-Value="variant.Stock" Label="Stock" />
+                    </MudItem>
+                </MudGrid>
+                <MudDivider Class="my-4" />
 
-                <MudTextField Label="Concentration de CBD" @bind-Value="variant.CBDConcentration" />
+                <MudText Typo="Typo.h6">Informations</MudText>
+                <MudGrid Class="py-2">
+                    <MudItem xs="12">
+                        <MudTextField Label="Sous-titre" @bind-Value="variant.Description.Subtitle" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="py-2">
+                    <MudItem xs="12">
+                        <MudTextField Label="Slogan" @bind-Value="variant.Description.Slogan" />
+                    </MudItem>
+                </MudGrid>
+                <MudPaper Elevation="3" Class="m-4 p-4">
 
-                <MudNumericField @bind-Value="variant.Price" Label="Prix (euro)" />
-                <MudNumericField @bind-Value="variant.Stock" Label="Stock" />
+                    <MudText Typo="Typo.body1" Class="pb-3"><strong>Utilisez Markdown pour ajouter des liens et formater le
+                            texte :</strong> </MudText>
+                    <MudText Typo="Typo.body2">
+                        <ul>
+                            <li><strong>Ajouter des liens :</strong> Utilisez le format :
+                                <code>[Texte du lien](http://example.com)</code><br />
+                                Exemple : <code>[Cliquez ici pour visiter Google](http://www.google.com)</code>.
+                            </li>
+                            <li><strong>Texte en gras :</strong> Utilisez <code>**Texte en gras**</code> pour du texte en
+                                gras. Exemple : <strong>**Ceci est un texte en gras**</strong>.
+                            </li>
+                            <li><strong>Texte en italique :</strong> Utilisez <code>*Texte en italique*</code> pour du texte
+                                en italique. Exemple : <em>*Ceci est un texte en italique*</em>.
+                            </li>
+                            <li><strong>Listes à puces :</strong> Utilisez <code>-</code> ou <code>*</code> pour créer une
+                                liste à puces. Exemple :
+                                <ul>
+                                    <li>- Premier élément</li>
+                                    <li>- Deuxième élément</li>
+                                </ul>
+                            </li>
+                            <li><strong>Listes numérotées :</strong> Utilisez des nombres suivis d'un point pour des listes
+                                numérotées. Exemple :
+                                <ol>
+                                    <li>Premier élément</li>
+                                    <li>Deuxième élément</li>
+                                </ol>
+                            </li>
+                            <li><strong>En-têtes :</strong> Utilisez <code>#</code> pour les titres (plus de <code>#</code>
+                                pour des sous-titres). Exemple :
+                                <br /><code># Titre principal</code><br /><code>## Sous-titre</code><br /><code>### Sous-sous-titre</code>.
+                            </li>
+                        </ul>
+                    </MudText>
+                </MudPaper>
+                <MudGrid Class="py-4">
+                    <MudItem sm="12">
+                        <MudTextField Variant="Variant.Outlined" AutoGrow Label="Description détaillée"
+                            @bind-Value="variant.Description.Description" Multiline="true" Lines="10" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="py-4">
+                    <MudItem sm="12">
+                        <MudTextField Variant="Variant.Outlined" AutoGrow Label="Ingrédients"
+                            @bind-Value="variant.Description.Ingredients" Multiline="true" Lines="10" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="py-4">
+                    <MudItem sm="12">
+                        <MudTextField Variant="Variant.Outlined" AutoGrow Label="Bénéfices"
+                            @bind-Value="variant.Description.Benefits" Multiline="true" Lines="10" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="py-4">
+                    <MudItem sm="12">
+                        <MudTextField Variant="Variant.Outlined" AutoGrow Label="Instructions d'utilisation"
+                            @bind-Value="variant.Description.UsageInstructions" Multiline="true" Lines="10" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="py-4">
+                    <MudItem sm="12">
+                        <MudTextField Variant="Variant.Outlined" AutoGrow Label="Informations sur le producteur"
+                            @bind-Value="variant.Description.ProducerInformation" Multiline="true" Lines="10" />
+                    </MudItem>
+                </MudGrid>
             </div>
+
+            <MudStack Row Class="p-3" Justify="Justify.FlexEnd">
+                <MudButton Class="" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="RemoveVariant"
+                    Variant="Variant.Filled">Supprimer</MudButton>
+            </MudStack>
         </MudTabPanel>
     }
     </MudTabs>
-
 
     @code {
     [Parameter] public ICollection<ProductVariant> Variants { get; set; }
@@ -55,13 +166,44 @@
 
     private void AddNewVariant()
     {
-        var newVariant = new ProductVariant { VariantName = $"Variante" };
+        var newVariant = new ProductVariant
+            {
+                VariantName = "Variante",
+                Description = new ProductDescription()
+            };
         Variants.Add(newVariant);
         SelectedVariantIndex = Variants.Count - 1; // Select the newly added variant
     }
 
+    private void RemoveVariant()
+    {
+        if (SelectedVariantIndex >= 0 && SelectedVariantIndex < Variants.Count)
+        {
+            var variantToRemove = Variants.ElementAt(SelectedVariantIndex);
+            ProductService.DeleteProductVariant(variantToRemove.ProductVariantID);
+            Variants.Remove(variantToRemove);
+
+            if (Variants.Any())
+            {
+                SelectedVariantIndex = Math.Min(SelectedVariantIndex, Variants.Count - 1);
+            }
+            else
+            {
+                SelectedVariantIndex = 0;
+            }
+        }
+    }
+
     private string GetVariantDisplayText(ProductVariant variant)
     {
-        return $"{(string.IsNullOrWhiteSpace(variant.VariantName) ? "" : variant.VariantName + " ")}{variant.Size}{(variant.Size > 0 ? variant.SizeUnit : "")}";
+        if (variant == null)
+            return string.Empty;
+
+        string variantName = !string.IsNullOrWhiteSpace(variant.VariantName) ? variant.VariantName + " " : "";
+
+        string size = variant.Size.HasValue && variant.Size.Value > 0 ? variant.Size.Value.ToString() : "";
+        string sizeUnit = !string.IsNullOrEmpty(size) ? variant.SizeUnit.ToString() : "";
+
+        return $"{variantName}{size}{sizeUnit}";
     }
 }

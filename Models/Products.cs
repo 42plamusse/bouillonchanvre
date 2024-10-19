@@ -88,6 +88,8 @@ namespace BouillonChanvre.Models
         [Required]
         public string ImageUrl { get; set; }  // URL or path to the image
 
+        public int Order { get; set; }
+
         public int ProductVariantID { get; set; }  // Foreign key to the product variant
         public virtual ProductVariant ProductVariant { get; set; }  // Navigation property to the product variant
     }

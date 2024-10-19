@@ -8,10 +8,12 @@ namespace BouillonChanvre.Services
     public class ProductService : IProductService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly IBlobStorageService _blobStorageService;
 
-        public ProductService(IDbContextFactory<ApplicationDbContext> contextFactory)
+        public ProductService(IDbContextFactory<ApplicationDbContext> contextFactory, IBlobStorageService blobStorageService)
         {
             _contextFactory = contextFactory;
+            _blobStorageService = blobStorageService;
         }
 
         private IQueryable<Product> GetProductQuery(ApplicationDbContext context)
@@ -96,5 +98,26 @@ namespace BouillonChanvre.Services
                 await context.SaveChangesAsync();
             }
         }
+        public async Task DeleteProductVariantImage(int productImageId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            // Find the product image by its ID
+            var productImage = await context.ProductImages
+                .FirstOrDefaultAsync(img => img.ProductImageID == productImageId);
+
+            if (productImage != null)
+            {
+                // Remove the image from the context
+                context.ProductImages.Remove(productImage);
+
+                // Optionally: Remove the image from storage if necessary
+                await _blobStorageService.DeleteFileAsync("product-images", productImage.ImageUrl);
+
+                // Save changes to the database
+                await context.SaveChangesAsync();
+            }
+        }
+
     }
 }

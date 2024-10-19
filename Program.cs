@@ -2,6 +2,7 @@ using BouillonChanvre.Data;
 using BouillonChanvre.Services;
 using MudBlazor.Services;
 using Microsoft.EntityFrameworkCore;
+using Azure.Storage.Blobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +13,9 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-    // .EnableSensitiveDataLogging()
-    // .EnableDetailedErrors()
-    // .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information));
+    var azuriteConnectionString = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
+
+    builder.Services.AddSingleton<IBlobStorageService>(new BlobStorageService(azuriteConnectionString));
 }
 else
 {
@@ -24,6 +25,15 @@ else
 
     builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         options.UseSqlServer(connectionString));
+
+    string blobConnectionString = Environment.GetEnvironmentVariable("AZURE_BLOB_CONNECTION_STRING");
+
+    if (string.IsNullOrEmpty(blobConnectionString))
+    {
+        throw new InvalidOperationException("Azure Blob Storage connection string is not set.");
+    }
+
+    builder.Services.AddSingleton<IBlobStorageService>(new BlobStorageService(blobConnectionString));
 }
 
 builder.Services.AddScoped<IProductService, ProductService>();

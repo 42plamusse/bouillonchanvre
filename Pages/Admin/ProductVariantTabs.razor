@@ -2,6 +2,7 @@
 @using MudBlazor
 @using BouillonChanvre.Services
 @inject IProductService ProductService
+@inject IBlobStorageService BlobStorageService
 
 <MudStack Row Class="py-3">
     <MudText Typo="Typo.h5">Variantes</MudText>
@@ -11,11 +12,52 @@
 </MudStack>
 
 <MudTabs @bind-ActivePanelIndex="SelectedVariantIndex">
-    <!-- Display variant tabs -->
     @foreach (var variant in Variants)
     {
         <MudTabPanel Text="@GetVariantDisplayText(variant)">
-            <!-- Variant details (sizes for now) -->
+            <MudCard Class="mb-4">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-2">Images de la variante</MudText>
+                    <MudText Typo="Typo.body2" Class="mb-1">Taille maximale des fichiers : 10MB</MudText>
+
+                    <!-- Image Upload Button -->
+                    <MudFileUpload T="IReadOnlyList<IBrowserFile>" Accept=".png, .jpg, .jpeg"
+                        FilesChanged="@(async (files) => await UploadFiles(files, variant))" MaximumFileCount="10" 
+                        MaxFileSize="10485760">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                StartIcon="@Icons.Material.Filled.CloudUpload">
+                                Ajouter des images
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+
+                    <!-- Display added images as thumbnails -->
+                    @if (variant.Images?.Any() == true)
+                    {
+                        <MudStack Row="false" Class="mt-4" Spacing="2">
+                            @foreach (var image in variant.Images.OrderBy(i => i.Order))
+                            {
+                                <MudPaper Class="image-container">
+                                    <MudImage Src="@image.ImageUrl" Alt="Image" Width="100" Height="100" />
+                                    <MudStack Row Justify="Justify.Center">
+                                        <!-- Remove Image Button -->
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                            OnClick="() => RemoveImage(variant, image)" />
+                                        <!-- Sorting Icons -->
+                                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward"
+                                            OnClick="() => MoveImageUp(variant, image)" Disabled="@IsFirstImage(variant, image)" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward"
+                                            OnClick="() => MoveImageDown(variant, image)" Disabled="@IsLastImage(variant, image)" />
+                                    </MudStack>
+                                </MudPaper>
+                            }
+                        </MudStack>
+                    }
+                </MudCardContent>
+            </MudCard>
+
+            <!-- Variant details and other information below -->
             <div class="form-group">
                 <!-- Variant Name and Reference on the same row -->
                 <MudGrid Class="py-4">
@@ -58,6 +100,7 @@
                         <MudNumericField @bind-Value="variant.Stock" Label="Stock" />
                     </MudItem>
                 </MudGrid>
+
                 <MudDivider Class="my-4" />
 
                 <MudText Typo="Typo.h6">Informations</MudText>
@@ -72,42 +115,19 @@
                     </MudItem>
                 </MudGrid>
                 <MudPaper Elevation="3" Class="m-4 p-4">
-
                     <MudText Typo="Typo.body1" Class="pb-3"><strong>Utilisez Markdown pour ajouter des liens et formater le
                             texte :</strong> </MudText>
                     <MudText Typo="Typo.body2">
                         <ul>
                             <li><strong>Ajouter des liens :</strong> Utilisez le format :
-                                <code>[Texte du lien](http://example.com)</code><br />
-                                Exemple : <code>[Cliquez ici pour visiter Google](http://www.google.com)</code>.
+                                <code>[Texte du lien](http://example.com)</code>.
                             </li>
-                            <li><strong>Texte en gras :</strong> Utilisez <code>**Texte en gras**</code> pour du texte en
-                                gras. Exemple : <strong>**Ceci est un texte en gras**</strong>.
-                            </li>
-                            <li><strong>Texte en italique :</strong> Utilisez <code>*Texte en italique*</code> pour du texte
-                                en italique. Exemple : <em>*Ceci est un texte en italique*</em>.
-                            </li>
-                            <li><strong>Listes à puces :</strong> Utilisez <code>-</code> ou <code>*</code> pour créer une
-                                liste à puces. Exemple :
-                                <ul>
-                                    <li>- Premier élément</li>
-                                    <li>- Deuxième élément</li>
-                                </ul>
-                            </li>
-                            <li><strong>Listes numérotées :</strong> Utilisez des nombres suivis d'un point pour des listes
-                                numérotées. Exemple :
-                                <ol>
-                                    <li>Premier élément</li>
-                                    <li>Deuxième élément</li>
-                                </ol>
-                            </li>
-                            <li><strong>En-têtes :</strong> Utilisez <code>#</code> pour les titres (plus de <code>#</code>
-                                pour des sous-titres). Exemple :
-                                <br /><code># Titre principal</code><br /><code>## Sous-titre</code><br /><code>### Sous-sous-titre</code>.
-                            </li>
+                            <li><strong>Texte en gras :</strong> Utilisez <code>**Texte en gras**</code>.</li>
+                            <li><strong>Texte en italique :</strong> Utilisez <code>*Texte en italique*</code>.</li>
                         </ul>
                     </MudText>
                 </MudPaper>
+
                 <MudGrid Class="py-4">
                     <MudItem sm="12">
                         <MudTextField Variant="Variant.Outlined" AutoGrow Label="Description détaillée"
@@ -138,12 +158,12 @@
                             @bind-Value="variant.Description.ProducerInformation" Multiline="true" Lines="10" />
                     </MudItem>
                 </MudGrid>
-            </div>
 
-            <MudStack Row Class="p-3" Justify="Justify.FlexEnd">
-                <MudButton Class="" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="RemoveVariant"
-                    Variant="Variant.Filled">Supprimer</MudButton>
-            </MudStack>
+                <MudStack Row Class="p-3" Justify="Justify.FlexEnd">
+                    <MudButton Class="" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                        OnClick="RemoveVariant" Variant="Variant.Filled">Supprimer</MudButton>
+                </MudStack>
+            </div>
         </MudTabPanel>
     }
     </MudTabs>
@@ -169,8 +189,10 @@
         var newVariant = new ProductVariant
             {
                 VariantName = "Variante",
-                Description = new ProductDescription()
+                Description = new ProductDescription(),
+                Images = new List<ProductImage>() // Ensure Images is initialized
             };
+
         Variants.Add(newVariant);
         SelectedVariantIndex = Variants.Count - 1; // Select the newly added variant
     }
@@ -200,10 +222,85 @@
             return string.Empty;
 
         string variantName = !string.IsNullOrWhiteSpace(variant.VariantName) ? variant.VariantName + " " : "";
-
         string size = variant.Size.HasValue && variant.Size.Value > 0 ? variant.Size.Value.ToString() : "";
         string sizeUnit = !string.IsNullOrEmpty(size) ? variant.SizeUnit.ToString() : "";
-
         return $"{variantName}{size}{sizeUnit}";
+    }
+
+    private async Task UploadFiles(IReadOnlyList<IBrowserFile> files, ProductVariant variant)
+    {
+        int currentOrder = variant.Images.Count;
+        foreach (var file in files)
+        {
+            var fileUrl = await BlobStorageService.UploadFileAsync("product-images", file);
+            var productImage = new ProductImage
+                {
+                    ImageUrl = fileUrl,
+                    ProductVariantID = variant.ProductVariantID,
+                    ProductVariant = variant,
+                    Order = currentOrder++ // Set initial order for the image
+                };
+            variant.Images.Add(productImage);
+        }
+    }
+
+    private void RemoveImage(ProductVariant variant, ProductImage image)
+    {
+        variant.Images.Remove(image);
+        UpdateImageOrder(variant); // Reassign the Order after removal
+        ProductService.DeleteProductVariantImage(image.ProductImageID);
+    }
+
+    private bool IsFirstImage(ProductVariant variant, ProductImage image)
+    {
+        return variant.Images.OrderBy(i => i.Order).First() == image;
+    }
+
+    private bool IsLastImage(ProductVariant variant, ProductImage image)
+    {
+        return variant.Images.OrderBy(i => i.Order).Last() == image;
+    }
+
+    private void MoveImageUp(ProductVariant variant, ProductImage image)
+    {
+        var imagesList = variant.Images.OrderBy(i => i.Order).ToList();
+        var index = imagesList.IndexOf(image);
+        if (index > 0)
+        {
+            var previousImage = imagesList[index - 1];
+            imagesList[index - 1] = image;
+            imagesList[index] = previousImage;
+
+            imagesList[index - 1].Order = index - 1;
+            imagesList[index].Order = index;
+
+            variant.Images = imagesList.OrderBy(i => i.Order).ToList();
+        }
+    }
+
+    private void MoveImageDown(ProductVariant variant, ProductImage image)
+    {
+        var imagesList = variant.Images.OrderBy(i => i.Order).ToList();
+        var index = imagesList.IndexOf(image);
+        if (index < imagesList.Count - 1)
+        {
+            var nextImage = imagesList[index + 1];
+            imagesList[index + 1] = image;
+            imagesList[index] = nextImage;
+
+            imagesList[index + 1].Order = index + 1;
+            imagesList[index].Order = index;
+
+            variant.Images = imagesList.OrderBy(i => i.Order).ToList();
+        }
+    }
+
+    private void UpdateImageOrder(ProductVariant variant)
+    {
+        var orderedImages = variant.Images.OrderBy(i => i.Order).ToList();
+        for (int i = 0; i < orderedImages.Count; i++)
+        {
+            orderedImages[i].Order = i;
+        }
     }
 }
